@@ -1,9 +1,11 @@
 from app import app
 from flask import render_template
 import os
+import dropbox
 
 DROPBOX_BOX_KEY = os.environ.get('DROPBOX_BOX_KEY')
 DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')
+flow = dropbox.client.DropboxOAuth2FlowNoRedirect(DROPBOX_BOX_KEY, DROPBOX_APP_SECRET)
 
 @app.route('/')
 # def home():
