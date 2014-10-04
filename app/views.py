@@ -6,6 +6,7 @@ import dropbox
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
 
+
 @app.route('/')
 def home():
   if not 'access_token' in session:
@@ -33,3 +34,16 @@ def dropbox_auth_finish():
 def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
 	return dropbox.client.DropboxOAuth2Flow(AIRBOX_DROPBOX_APP_KEY, AIRBOX_DROPBOX_APP_SECRET, redirect_uri, session, 'dropbox-auth-csrf-token')
+
+@app.route('/upload')
+def upload(client, filename):
+	f = open(filename, 'rb')
+	response = client.put_file('/'+filename, f)
+	print "upload:", response
+
+@app.route('/download')
+def download(client, filename):
+	f, metadata = client.get_file_and_metadata('/'+filename)
+	out = open(filename, 'wb')
+	out.write(f.read())
+	out.close()
