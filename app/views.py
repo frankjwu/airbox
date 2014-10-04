@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, redirect, url_for, session, abort
+from flask import render_template, redirect, url_for, session, abort, request
 import os
 import dropbox
 from .forms import UploadFileForm
@@ -36,15 +36,11 @@ def upload():
 	# Create the form
 	form = UploadFileForm()
 	if form.validate_on_submit():
-		# If not authenticated, break
-		if not dropbox.is_authenticated:
-			return redirect(url_for('home'))
-
-		# Else if I'm posting, upload to dropbox
-		if request.method == 'POST':
-			file_obj = request.files['dropboxFile']
-
-
+		# If validated, submit it to dropbox
+		# TODO: add shared folder
+		# f = open(form.name.data, 'rb')
+		# response = dropbox.client.put_file('/'+form.name.data, f)
+		# print "upload:", response
 		return redirect('/index')
 	return render_template('uploadFile.html',
 		title='Upload A File',
