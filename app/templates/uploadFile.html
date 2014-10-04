@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Upload a File</h1>
+	<form action="" method="post" name="login">
+		{{ form.hidden_tag() }}
+		<p>
+			Please enter your file name:<br>
+			{{ form.name(size=80) }}<br>
+		</p>
+		<p>
+			Please attach your file:<br>
+			{{ form.dropboxFile }}<br>
+		</p>
+		<p><input type="submit" value="Sign In"></p>
+	</form>
+{% endblock %}
