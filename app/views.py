@@ -4,6 +4,8 @@ from flask import render_template, redirect, url_for, session, abort, request, g
 import os
 import dropbox
 from .forms import UploadFileForm
+from werkzeug import secure_filename
+import logging
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
@@ -41,12 +43,17 @@ def upload():
 	# Create the form
 	form = UploadFileForm()
 	if form.validate_on_submit():
-		# If validated, submit it to dropbox
-		# TODO: add shared folder
-		# f = open(form.name.data, 'rb')
-		# response = dropbox.client.put_file('/'+form.name.data, f)
-		# print "upload:", response
+		# if I'm posting, upload to dropbox
+		if request.method == 'POST':
+			file_obj = request.files['file']
+			client = dropbox.client
+			filename = secure_filename(file_obj.name)
+			result = client.put_file('/' + filename, file_obj.read())
+			path = result['path'].lstrip('/')
+			return redirect(url_for('index', filename=path))
+		
 		return redirect('/index')
+	
 	return render_template('uploadFile.html',
 		title='Upload A File',
 		form = form)
