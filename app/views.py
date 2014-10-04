@@ -1,25 +1,20 @@
 from app import app
-from flask import render_template, redirect, url_for, session
+from flask import render_template, redirect, url_for, session, abort
 import os
 import dropbox
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
 
-
 @app.route('/')
-def home():
-  if not 'access_token' in session:
-    return redirect(url_for('dropbox_auth_start'))
-  return 'Authenticated.'
-
-@app.route('/index')
 def index():
 	return render_template('index.html')
 
 @app.route('/authenticate')
 def dropbox_auth_start():
-	return redirect(get_auth_flow().start())
+  # if not 'access_token' in session:
+  return redirect(get_auth_flow().start())
+  # return 'Authenticated.'
 
 @app.route('/authenticate-finish')
 def dropbox_auth_finish():
@@ -29,7 +24,7 @@ def dropbox_auth_finish():
 		abort(400)
 	else:
 		session['access_token'] = access_token
-	return redirect(url_for('home'))
+	return redirect(url_for('index'))
 
 def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)

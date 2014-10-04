@@ -32,7 +32,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/grub/Desktop/Projects/airbox/airbox"
+set -gx VIRTUAL_ENV "/Users/frankjwu/code/airbox/airbox"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
