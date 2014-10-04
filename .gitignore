@@ -1,0 +1,3 @@
+dropbox-python-sdk-2.2.0/dist/dropbox-2.2.0-py2.7.egg
+*.pyc
+/app/*.pyc
