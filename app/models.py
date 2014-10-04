@@ -14,8 +14,8 @@ class Seller(User):
     __tablename__ = 'user'
     __mapper_args__ = { 'polymorphic_identity': 'user' }
 
-    id = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    space_selling = Column(db.Float)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    space_selling = db.Column(db.Float)
 
     def space_left(self):
         space = self.space_selling
@@ -28,7 +28,7 @@ class Buyer(User):
     __tablename__ = 'user'
     __mapper_args__ = { 'polymorphic_identity': 'user' }
 
-    id = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
