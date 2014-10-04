@@ -41,11 +41,15 @@ def upload():
 	# Create the form
 	form = UploadFileForm()
 	if form.validate_on_submit():
-		# If validated, submit it to dropbox
-		# TODO: add shared folder
-		# f = open(form.name.data, 'rb')
-		# response = dropbox.client.put_file('/'+form.name.data, f)
-		# print "upload:", response
+		# If not authenticated, break
+		if not dropbox.is_authenticated:
+			return redirect(url_for('home'))
+
+		# Else if I'm posting, upload to dropbox
+		if request.method == 'POST':
+			file_obj = request.files['dropboxFile']
+
+
 		return redirect('/index')
 	return render_template('uploadFile.html',
 		title='Upload A File',
