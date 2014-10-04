@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, redirect, url_for, session, abort
 import os
 import dropbox
+from .forms import UploadFileForm
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
@@ -30,15 +31,29 @@ def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
 	return dropbox.client.DropboxOAuth2Flow(AIRBOX_DROPBOX_APP_KEY, AIRBOX_DROPBOX_APP_SECRET, redirect_uri, session, 'dropbox-auth-csrf-token')
 
-@app.route('/upload')
-def upload(client, filename):
-	f = open(filename, 'rb')
-	response = client.put_file('/'+filename, f)
-	print "upload:", response
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+	# Create the form
+	form = UploadFileForm()
+	if form.validate_on_submit():
+		# If validated, submit it to dropbox
+		# TODO: add shared folder
+		# f = open(form.name.data, 'rb')
+		# response = dropbox.client.put_file('/'+form.name.data, f)
+		# print "upload:", response
+		return redirect('/index')
+	return render_template('uploadFile.html',
+		title='Upload A File',
+		form = form)
 
 @app.route('/download')
-def download(client, filename):
-	f, metadata = client.get_file_and_metadata('/'+filename)
-	out = open(filename, 'wb')
+def download():
+	f, metadata = dropbox.client.get_file_and_metadata('/'+form.name)
+	out = open(form.name, 'wb')
 	out.write(f.read())
 	out.close()
+
+	
+	
+	
+
