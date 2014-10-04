@@ -46,8 +46,9 @@ def upload():
 			result = client.put_file('/' + filename, file_obj.read())
 			path = result['path'].lstrip('/')
 			return redirect(url_for('index', filename=path))
-
+		
 		return redirect('/index')
+	
 	return render_template('uploadFile.html',
 		title='Upload A File',
 		form = form)
