@@ -1,0 +1,13 @@
+This is a simple Flask example app that shows how to link with a user's Dropbox
+via the Python SDK.
+
+How to use
+----------
+
+1. Edit the configuration in the simple_dropbox_app.py file. You'll need to set the
+   DROPBOX_APP_KEY and DROPBOX_APP_SECRET to the app key and app secret of your
+   Dropbox app.  Make sure to add http://127.0.0.1:5000/dropbox-auth-finish
+   to the OAuth redirect URLs in your Dropbox app configuration.
+
+2. Now you can run the simple_dropbox_app.py file with your python interpreter and
+   the application will greet you on http://localhost:5000/.
