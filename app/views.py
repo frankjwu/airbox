@@ -7,6 +7,7 @@ DROPBOX_BOX_KEY = os.environ.get('DROPBOX_BOX_KEY')
 DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')
 flow = dropbox.client.DropboxOAuth2FlowNoRedirect(DROPBOX_BOX_KEY, DROPBOX_APP_SECRET)
 
+
 @app.route('/')
 # def home():
 # 	return redirect(url_for('dropbox_auth_start'))	
@@ -32,3 +33,17 @@ def index():
 # def get_auth_flow():
 # 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
 # 	return DropboxOAuth2Flow(DROPBOX_APP_KEY, DROPBOX_APP_SECRET, redirect_uri, session, 'dropbox-auth-csrf-token')
+
+@app.route('/upload')
+def upload(client, filename):
+	f = open(filename, 'rb')
+	response = client.put_file('/'+filename, f)
+	print "upload:", response
+
+@app.route('/download')
+def download(client, filename):
+	f, metadata = client.get_file_and_metadata('/'+filename)
+	out = open(filename, 'wb')
+	out.write(f.read())
+	out.close()
+
