@@ -7,11 +7,17 @@
 		<p>
 			Please enter your file name:<br>
 			{{ form.name(size=80) }}<br>
+			{% for error in form.name.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
 		</p>
 		<p>
 			Please attach your file:<br>
 			{{ form.dropboxFile }}<br>
+			{% for error in form.dropboxFile.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
 		</p>
-		<p><input type="submit" value="Sign In"></p>
+		<p><input type="submit" value="Upload to airbox"></p>
 	</form>
 {% endblock %}
