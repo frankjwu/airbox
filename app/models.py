@@ -114,37 +114,3 @@ class Transaction(db.Model):
 
     def __repr__(self):
         return '<User original_name: %r>' % (self.original_name)
-
-# transactionsellers_table = db.Table(
-#     'transactionsellers',
-#     db.metadata,
-#     db.Column(
-#         'transaction_id',
-#         db.Integer,
-#         db.ForeignKey("transaction.id"),
-#         primary_key=True
-#     ),
-#     db.Column(
-#         'seller_id',
-#         db.Integer,
-#         db.ForeignKey("user.id"),
-#         primary_key=True
-#     )
-# )
-
-# transactionfiles_table = db.Table(
-#     'transactionfiles',
-#     db.metadata,
-#     db.Column(
-#         'transaction_id',
-#         db.Integer,
-#         db.ForeignKey("transaction.id"),
-#         primary_key=True
-#     ),
-#     db.Column(
-#         'file_id',
-#         db.Integer,
-#         db.ForeignKey("file.id"),
-#         primary_key=True
-#     )
-# )
