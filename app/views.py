@@ -210,7 +210,7 @@ def upload_processor(upload):
 
 def fetch_sellers(file_size):
 	sellers = []
-	num_sellers = math.ceil(file_size / SPLIT_FILESIZE) # We split files based on this number
+	num_sellers = math.ceil(file_size / float(SPLIT_FILESIZE)) # We split files based on this number
 	found = 0
 	amount_needed = file_size
 	ignore = None
