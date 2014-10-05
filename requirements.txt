@@ -7,8 +7,9 @@ SQLAlchemy==0.9.7
 WTForms==2.0.1
 Werkzeug==0.9.6
 dropbox==2.2.0
+gunicorn==19.1.1
 itsdangerous==0.24
+pycrypto==2.6
+simple-crypt==3.0.2
 urllib3==1.9.1
 wsgiref==0.1.2
-pycrypto==2.6
-gunicorn
