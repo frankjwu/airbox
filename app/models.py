@@ -73,7 +73,6 @@ class Transaction(db.Model):
     price = db.Column(db.Float)
     # transaction_files = db.relationship('File', secondary=lambda: transactionfiles_table)
 
-    folder_name = db.Column(db.String(1000))
     original_name = db.Column(db.String(1000))
     encrypted_name = db.Column(db.String(1000))
     extension = db.Column(db.String(100))
@@ -89,9 +88,7 @@ class Transaction(db.Model):
     # sellers = association_proxy('transaction_sellers', 'user')
     # files = association_proxy('transaction_files', 'file')
 
-
-    def __init__(self, folder_name, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, file_array, blocks):
-        self.folder_name = folder_name
+    def __init__(self, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, file_array, blocks):
         self.original_name = original_name
         self.encrypted_name = encrypted_name
         self.extension = extension
