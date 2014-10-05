@@ -32,13 +32,13 @@ def dropbox_auth_finish():
 	else:
 		account_info = dropbox.client.DropboxClient(access_token).account_info()
 
-		g.user = fetch(account_info["uid"])
-		if user:
+		g.user = User.fetch_by_uid(account_info["uid"])
+		if g.user:
 			g.user.dropbox_access_token = access_token
 		else:
 			g.user = User(account_info["uid"], account_info["display_name"], access_token)
 			db.session.add(g.user)
-			
+
 		db.session.commit()
 	return redirect(url_for('index'))
 
