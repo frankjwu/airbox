@@ -10,18 +10,30 @@ import logging
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
 
-def get_current_user():
+def current_user():
 	return User.query.filter_by(id=session.get('user_id')).first()
+
+def current_access_token():
+	user = current_user();
+	if user:
+		return user.dropbox_access_token
+	else:
+		return None
 
 @app.route('/')
 def index():
 	return render_template('index.html')
 
+@app.route('/dashboard')
+def dashboard():
+	if current_access_token():
+		return render_template('dashboard.html')
+	else:
+		return redirect(url_for('dropbox_auth_start'))
+
 @app.route('/authenticate')
 def dropbox_auth_start():
-	# if not 'access_token' in session:
 	return redirect(get_auth_flow().start())
-	# return 'Authenticated.'
 
 @app.route('/authenticate-finish')
 def dropbox_auth_finish():
@@ -32,14 +44,16 @@ def dropbox_auth_finish():
 	else:
 		account_info = dropbox.client.DropboxClient(access_token).account_info()
 
-		g.user = fetch(account_info["uid"])
-		if user:
+		# Check if already existing
+		g.user = User.fetch_by_uid(account_info["uid"])
+		if g.user:
 			g.user.dropbox_access_token = access_token
 		else:
 			g.user = User(account_info["uid"], account_info["display_name"], access_token)
 			db.session.add(g.user)
-			
+		# Save
 		db.session.commit()
+		session['user_id'] = g.user.id
 	return redirect(url_for('index'))
 
 def get_auth_flow():

@@ -26,7 +26,14 @@ class User(db.Model):
 
     @staticmethod
     def fetch(id):
-        User.query(uid = id)
+        user = User.query.get(id)
+        return user
+
+    @staticmethod
+    def fetch_by_uid(id):
+        user = User.query.filter(User.uid == id).first()
+        return user
+        
 
     def __init__(self, uid, name, dropbox_access_token):
         self.uid = uid
