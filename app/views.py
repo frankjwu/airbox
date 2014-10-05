@@ -66,6 +66,7 @@ def upload():
 	form = UploadFileForm()
 	if form.validate_on_submit():
 		# if I'm posting, upload to dropbox
+		access_token = current_access_token
 		access_token = "CHwtkpb0-90AAAAAAAAKIDizJGns6cfTivckPjBwV5ddGcASpMcJZ9SOSDPAOOLm" # Temporary
 		client = dropbox.client.DropboxClient(access_token)
 
@@ -77,11 +78,11 @@ def upload():
 		title='Upload A File',
 		form = form)
 
-# @app.route('/download')
-# def download():
-	# access_token = models.User
-	# client = dropbox.client.DropboxClient(access_token)
-	# f, metadata = client.get_file_and_metadata('/'+request.args['filename'])
-	# out = open(request.args['filename'], 'wb')
-	# out.write(f.read())
-	# out.close()
+@app.route('/download')
+def download():
+	access_token = models.User
+	client = dropbox.client.DropboxClient(access_token)
+	f, metadata = client.get_file_and_metadata('/'+request.args['filename'])
+	out = open(request.args['filename'], 'wb')
+	out.write(f.read())
+	out.close()
