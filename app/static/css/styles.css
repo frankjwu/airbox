@@ -9,3 +9,7 @@
 	color: gray;
 	font-size: 1.8em;
 }
+
+.hidden {
+  display: none;
+}

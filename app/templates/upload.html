@@ -1,6 +1,5 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "dashboard.html" %}
+{% block upload %}
 	<h1>Upload a File</h1>
 	<form action="" method="post" name="upload" enctype="multipart/form-data">
 		{{ form.hidden_tag() }}
@@ -20,4 +19,4 @@
 		</p>
 		<p><input type="submit" value="Upload to airbox"></p>
 	</form>
-{% endblock %}
+{% endblock upload %}
