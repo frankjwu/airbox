@@ -99,7 +99,7 @@ class Transaction(db.Model):
         i = 0
         for s in seller_array:
             self.sellers.append(s)
-            s.file_path = file_array[i]
+            self.sellers[i].file_path = file_array[i]
             i += 1
         
         self.blocks = blocks
