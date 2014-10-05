@@ -139,7 +139,7 @@ def upload_processor(upload):
 
 	# 3. Actually upload the file
 	i = 0
-	while (i < blocks)
+	while (i < blocks):
 		access_token = sellers[i].dropbox_access_token
 		if not access_token:
 			return "Error"
