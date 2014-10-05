@@ -11,11 +11,12 @@ from Crypto.Cipher import AES
 import base64
 import hashlib
 import math
-import random
+import random, string
+import simplecrypt
+
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
-BLOCK_SIZE = 32
 SPLIT_FILESIZE = 10000000 # in bytes. this is 10MB
 
 @app.route('/')
@@ -222,27 +223,23 @@ def fetch_sellers(file_size):
 	return sellers
 
 def key_gen():
-	return Random.new().read(BLOCK_SIZE)
+	key = ''.join(random.choice(string.ascii_uppercase) for i in range(32))
+	return key
 
 def encrypt_file(plaintext):
-	plaintext = pad(plaintext)
-	iv = Random.new().read(BLOCK_SIZE/2)
 	key = key_gen()
-	cipher = AES.new(key, AES.MODE_CBC, iv)
-	res = base64.b64encode(iv + cipher.encrypt(plaintext))
-	return res, key
+	ciphertext = simplecrypt.encrypt(key, plaintext)
+	return ciphertext, key
 
 def decrypt_file(ciphertext, key):
-	ciphertext = base64.b64decode(ciphertext)
-	iv = ciphertext[:BLOCK_SIZE/2]
-	cipher = AES.new(key, AES.MODE_CBC, iv)
-	return unpad(cipher.decrypt(ciphertext[BLOCK_SIZE/2:]))
+	plaintext = simplecrypt.decrypt(key, ciphertext)
+	return plaintext
 
-def pad(s):
-	return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
+# def pad(s):
+#     return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
 
-def unpad(s):
-	return s[:-ord(s[len(s)-1:])]
+# def unpad(s):
+# 	return s[:-ord(s[len(s)-1:])]
 
 def download_processor(t_id):
 	# 1. Fetch transaction and corresponding files
