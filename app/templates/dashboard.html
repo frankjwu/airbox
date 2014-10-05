@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="wrapper">
   <div class="container">
     <div class="row">
-      <h1>Dashboard</h1>
       <div class="col-md-6">
         <div class="buy-splash">
-          <h2>Find your dream "space"</h2>
+          <h2>Find space</h2>
           <button type="button" class="btn btn-default" onclick="showBuy()">Go</button>
         </div>
         <div class="buy-real" style="display:none">
@@ -25,8 +25,9 @@
       </div>
       <div class="col-md-6">
         <div class="sell-splash">
-          <h2>List your "space"</h2>
-          {{ user.space_selling }}
+          <h2>Rent out your space</h2>
+          <p>You've listed {{ (user.space_selling / 1000000)|round|int }} MB on Airbox.<br />
+          {{ (user.space_left / 1000000)|round|int }} MB are still available for rent.</p>
           <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
         </div>
         <div class="sell-real" style="display:none">
@@ -46,6 +47,7 @@
       </div>
     </div>
   </div>
+</div>
 
 <script>
   function showSell() {
