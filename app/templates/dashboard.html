@@ -5,20 +5,13 @@
       <h1>Dashboard</h1>
       <div class="col-md-6">
         <div class="buy-splash">
-          <h2>List your "space"</h2>
+          <h2>Find your dream "space"</h2>
           <button type="button" class="btn btn-default" onclick="showBuy()">Go</button>
         </div>
         <div class="buy-real" style="display:none">
           <h1>Upload a File</h1>
-          <form action="" method="post" name="upload" enctype="multipart/form-data">
+          <form action="/buy" method="post" name="upload" enctype="multipart/form-data">
             {{ buy_form.hidden_tag() }}
-            <p>
-              Please enter your file name:<br>
-              {{ buy_form.name(size=80) }}<br>
-              {% for error in buy_form.name.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-              {% endfor %}
-            </p>
             <p>
               Please attach your file:<br>
               {{ buy_form.dropboxFile }}<br>
@@ -32,12 +25,12 @@
       </div>
       <div class="col-md-6">
         <div class="sell-splash">
-          <h2>Find your dream "space"</h2>
+          <h2>List your "space"</h2>
           <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
         </div>
         <div class="sell-real" style="display:none">
           <h1>Sell your space</h1>
-          <form action="" method="post" name="list">
+          <form action="/sell" method="post" name="list">
             {{ sell_form.hidden_tag() }}
             <p> 
               How much space are you putting up for sale?<br>

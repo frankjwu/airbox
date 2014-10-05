@@ -66,13 +66,18 @@ def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
 	return dropbox.client.DropboxOAuth2Flow(AIRBOX_DROPBOX_APP_KEY, AIRBOX_DROPBOX_APP_SECRET, redirect_uri, session, 'dropbox-auth-csrf-token')
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/buy', methods=['GET', 'POST'])
 def upload():
 	# Create the form
 	form = BuyForm()
 	if form.validate_on_submit():
-		# if I'm posting, upload to dropbox
+		# Upload to dropbox
+		#
+		# TODO: Find token or tokens to upload to
+		#
 		access_token = current_access_token()
+		if not access_token:
+			redirect(url_for('dropbox_auth_start'))
 		client = dropbox.client.DropboxClient(str(access_token))
 
 		if request.method == 'POST':
@@ -91,3 +96,18 @@ def download():
 	out = open(request.args['filename'], 'wb')
 	out.write(f.read())
 	out.close()
+
+@app.route('/sell', methods=['POST'])
+def sell():
+	form = SellForm()
+	if form.validate_on_submit():
+		g.user = current_user()
+		if not g.user:
+			redirect(url_for('dropbox_auth_start'))
+		if not g.user.space_selling:
+			g.user.space_selling = form.space.data
+		else:
+			g.user.space_selling += form.space.data
+		db.session.commit()
+
+		return redirect(url_for('dashboard'))

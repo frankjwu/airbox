@@ -11,7 +11,7 @@ class User(db.Model):
     name = db.Column(db.String(120))
     uid = db.Column(db.String(120), index=True, unique=True)
     dropbox_access_token = db.Column(db.String(1000))
-    space_selling = db.Column(db.Float)
+    space_selling = db.Column(db.Integer, default=0)
 
     def space_left(self):
         space = self.space_selling
@@ -41,7 +41,7 @@ class User(db.Model):
         self.dropbox_access_token = dropbox_access_token
 
     def __repr__(self):
-        return '<User uid: %r name: %r dropbox_access_token: %r>' % (self.uid, self.name, self.dropbox_access_token)    
+        return '<User uid: %r name: %r dropbox_access_token: %r space_selling %r>' % (self.uid, self.name, self.dropbox_access_token, self.space_selling)    
 
 
 class Transaction(db.Model):
