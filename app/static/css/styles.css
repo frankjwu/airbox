@@ -1,3 +1,5 @@
+
+
 @font-face {
   font-family: 'Avenir';
   src: url('/static/Avenir.ttf');
@@ -98,13 +100,80 @@ ul.meta {
 .buy-splash, .buy-real,
 .sell-splash, .sell-real {
   margin-top: 35px;
-  padding: 50px 80px;
+  /*padding: 50px 80px;*/
   background-color: white;
-  border-radius: 8px;
-  border: 3px solid #2E217A;
+  border-radius: 0px;
+  text-align: center;
+  margin: 0 auto;
+  /*border: 3px solid #2E217A;*/
 }
 
 .buy-splash hr {
   margin: 40px 0;
   border-color: #2E217A;
+}
+
+.gray {
+  background: gray;
+}
+
+.orange {
+  background: #FF8533;
+}
+
+.blue {
+  background: #0099CC;
+}
+
+.gray-title {
+  background: #B2B2B2;
+  width:100%;
+} 
+
+.blue-title {
+  background: #00CCFF;
+  width:100%;
+}
+
+.orange-title {
+  background: #FF9966;
+  width: 100%;
+}
+
+.buy-title {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.buy-description {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+ul, li {
+  list-style-type: none;
+}
+
+li a {
+  color: white;
+  padding-right:25px;
+  font-size: 1.4em;
+}
+
+.btn-default {
+  border-color: white;
+}
+
+.buy-description p {
+  color:white;
+}
+
+#title {
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+#dropboxFile {
+  margin: 0 auto;
+  text-align: center;
 }

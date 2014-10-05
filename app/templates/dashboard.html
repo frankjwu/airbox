@@ -1,49 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="wrapper">
-  <div class="container">
-    <ul class="meta">
-      <li><a href="/">Home</a></li>
-      <li><a href="/logout">Logout</a></li>
-    </ul>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="buy-splash">
-          <h2>Find space</h2>
-          <button type="button" class="btn btn-default" onclick="showBuy()">Explore</button>
-
-          {% if user.transactions %}
-            <hr>
-            <h2>Your downloads</h2>
-            <ul>
-              {% for t in user.transactions() %}
-                <li><a href="/download?id={{ t.id }}">{{ t.original_name }}</a></li>
-              {% endfor %}
-            </ul>
-          {% endif %}
+<div class="container">
+  <ul class="meta">
+    <li><a href="/">Home</a></li>
+    <li><a href="/logout">Logout</a></li>
+  </ul>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="buy-splash gray">
+        <div class="buy-title gray-title">
+          <h2 id="title">Find space</h2>
         </div>
-        <div class="buy-real" style="display:none">
-          <h2>Upload a file</h2>
-          <form action="/buy" method="post" name="upload" enctype="multipart/form-data">
-            {{ buy_form.hidden_tag() }}
-            <p>
-              {{ buy_form.dropboxFile }}<br>
-              {% for error in buy_form.dropboxFile.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-              {% endfor %}
-            </p>
-            <p><input class="btn btn-default" type="submit" value="Upload to airbox"></p>
-          </form>
+        <div class="buy-description">
+          <p>Upload files to be stored elsewhere.</p>
+          <button type="button" class="btn btn-default" onclick="showBuy()">Explore</button>
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="sell-splash">
-          <h2>Rent out your space</h2>
+      <br>
+      <br>
+      <div class="buy-splash blue">
+        {% if user.transactions %}
+        <div class="buy-title blue-title">
+          <h2 id="title">Your downloads</h2>
+        </div>
+        <div class="buy-description">
+          <ul>
+            {% for t in user.transactions() %}
+              <li><a href="/download?id={{ t.id }}">{{ t.original_name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+      <div class="buy-real gray" style="display:none">
+        <div class="buy-title gray-title">
+          <h2 id="title">Upload a file</h2>
+        </div>
+        <div class="buy-description">
+        <form action="/buy" method="post" name="upload" enctype="multipart/form-data">
+          {{ buy_form.hidden_tag() }}
+          <p>
+            {{ buy_form.dropboxFile }}<br>
+            {% for error in buy_form.dropboxFile.errors %}
+              <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+          <p><input class="btn btn-default" type="submit" value="Upload to airbox"></p>
+        </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="sell-splash orange">
+        <div class="buy-title orange-title">
+          <h2 id="title">Rent out your space</h2>
+        </div>
+        <div class="buy-description">
           <p>{{ (user.space_left / 1000000)|round|int }} MB out of {{ (user.space_selling / 1000000)|round|int }} MB of your Dropbox space is still available for rent on Airbox.</p>
           <button type="button" class="btn btn-default" onclick="showSell()">Rent out more?</button>
         </div>
-        <div class="sell-real" style="display:none">
-          <h1>Sell your space</h1>
+      </div>
+      <div class="sell-real orange" style="display:none">
+        <div class="buy-title orange-title">
+          <h2 id="title">Sell your space</h2>
+        </div>
+        <div class="buy-description">
           <form action="/sell" method="post" name="list">
             {{ sell_form.hidden_tag() }}
             <p> 
