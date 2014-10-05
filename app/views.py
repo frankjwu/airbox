@@ -96,10 +96,10 @@ def sell():
 			redirect(url_for('dropbox_auth_start'))
 		if not g.user.space_selling:
 			g.user.space_selling = form.space.data
-			g.user_space_left = form.space.data
+			g.user.space_left = form.space.data
 		else:
 			g.user.space_selling += form.space.data
-			g.user_space_left += form.space.data
+			g.user.space_left += form.space.data
 		db.session.commit()
 
 		return redirect(url_for('dashboard'))
@@ -122,10 +122,10 @@ def current_access_token():
 
 def upload_processor(upload):
 	orig_name = upload.filename
-	upload_file = open(upload, 'r')
+	upload_file = upload.stream.read()
 
 	# 1. Encrypt file and store secret_key
-	text, key, iv = encrypt_file(upload_file.read())
+	text, key, iv = encrypt_file(upload_file)
 	folder = Random.new().read(10)
 	name = Random.new().read(20)
 	enc_file = open("/tmp/" + name, 'wb')
@@ -144,7 +144,9 @@ def upload_processor(upload):
 		if not access_token:
 			return "Error"
 		client = dropbox.client.DropboxClient(str(access_token))
-		response = client.put_file('/airbox' + folder + "/" + name, enc_file)
+		tmp = open("/tmp/" + name, "r")
+		response = client.put_file('/airbox' + folder + "/" + name, tmp)
+		tmp.close()
 		if not response:
 			return "Error"
 		i += 1
@@ -156,6 +158,7 @@ def fetch_sellers(file_size):
 	num_sellers = math.ceil(file_size / SPLIT_FILESIZE) # We split files amongst every 10 MB
 	found = 0
 	amount_needed = file_size
+	ignore = None
 	while (found < num_sellers):
 		# Find seller and add to sellers array
 		max_seller = User.get_max_seller(ignore)
