@@ -28,7 +28,7 @@ class User(db.Model):
 
     @staticmethod
     def get_max_seller(ignore=None):
-        users = User.query.filter(User.space_left != 0).order_by(desc(User.space_left)).all()
+        users = User.query.filter(User.space_left > 0).order_by(desc(User.space_left)).all()
         size = len(users)
 
         # Ignore 'ignore' user so that we don't put consecutive blocks on same drive
@@ -64,9 +64,11 @@ class User(db.Model):
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(1000))
+    seller_id = db.Column(db.Integer)
 
-    def __init__(self, name):
-        self.name = name  
+    def __init__(self, name, seller_id):
+        self.name = name
+        self.seller_id = seller_id
 
 transaction_sellers = db.Table('transaction_sellers',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -75,6 +77,7 @@ transaction_sellers = db.Table('transaction_sellers',
 
 transaction_files = db.Table('transaction_files',
     db.Column('file_id', db.Integer, db.ForeignKey('file.id')),
+    db.Column('seller_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id'))
 )
 
@@ -94,6 +97,11 @@ class Transaction(db.Model):
     sellers = db.relationship(User, secondary=transaction_sellers, backref=db.backref('transaction_sellers', lazy='dynamic'))
     file_names = db.relationship(File, secondary=transaction_files, backref=db.backref('transaction_files', lazy='dynamic'))
 
+    @staticmethod
+    def fetch(id):
+        transaction = Transaction.query.get(id)
+        return transaction
+
     def __init__(self, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, file_array, blocks):
         self.original_name = original_name
         self.encrypted_name = encrypted_name
@@ -105,9 +113,11 @@ class Transaction(db.Model):
         for s in seller_array:
             self.sellers.append(s)
 
+        i = 0
         for f in file_array:
-            item = File(str(f))
+            item = File(str(f), seller_array[i].id)
             self.file_names.append(item)
+            i += 1
         
         self.blocks = blocks
         self.timestamp = datetime.now()

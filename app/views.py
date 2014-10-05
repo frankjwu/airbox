@@ -1,6 +1,6 @@
 from app import app, db
 from app.models import *
-from flask import render_template, redirect, url_for, session, abort, request, g
+from flask import render_template, redirect, url_for, session, abort, request, g, send_from_directory
 import os
 import dropbox
 from .forms import BuyForm, SellForm
@@ -78,12 +78,8 @@ def upload():
 
 @app.route('/download')
 def download():
-	access_token = models.User
-	client = dropbox.client.DropboxClient(access_token)
-	f, metadata = client.get_file_and_metadata('/'+request.args['filename'])
-	out = open(request.args['filename'], 'wb')
-	out.write(f.read())
-	out.close()
+	original_file = download_processor(request.args["id"])
+	return send_from_directory("/tmp", original_file)
 
 @app.route('/sell', methods=['POST'])
 def sell():
@@ -248,10 +244,29 @@ def pad(s):
 def unpad(s):
 	return s[:-ord(s[len(s)-1:])]
 
-def download_processor():
-	# 1. Fetch transaction and files
+def download_processor(t_id):
+	# 1. Fetch transaction and corresponding files
+	transaction = Transaction.fetch(t_id)
+	key = transaction.secret_key
+	file_names = transaction.file_names
+
 	# 2. Decrypt (combine them if they were separated)
+	out = open("/tmp/" + transaction.original_name, 'wb')
+	for f in file_names:
+		path = f.name
+		seller = User.fetch(f.seller_id)
+
+		access_token = seller.dropbox_access_token
+		if not access_token:
+			return "Error"
+		client = dropbox.client.DropboxClient(access_token)
+
+		f, metadata = client.get_file_and_metadata(path)
+		text = f.read()
+		decrypted = decrypt_file(text, key)
+		out.write(decrypted)
+		out.flush()
+	out.close()
+
 	# 3. Create download link
-	return
-
-
+	return transaction.original_name
