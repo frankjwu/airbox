@@ -6,9 +6,14 @@ import dropbox
 from .forms import BuyForm, SellForm
 from werkzeug import secure_filename
 import logging
+from Crypto import Random
+from Crypto.Cipher import AES
+import base64
+import hashlib
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
+BLOCK_SIZE = 32
 
 @app.route('/')
 def index():
@@ -133,11 +138,32 @@ def upload_processor():
 def fetch_sellers():
 	return
 
-def encrypt_file():
-	return
+def key_gen():
+	return Random.new().read(BLOCK_SIZE)
+
+def encrypt_file(plaintext):
+	plaintext = pad(plaintext)
+	iv = Random.new().read(BLOCK_SIZE/2)
+	key = key_gen()
+	cipher = AES.new(key, AES.MODE_CBC, iv)
+	res = base64.b64encode(iv + cipher.encrypt(plaintext))
+	return res, key, iv
+
+def decrypt_file(ciphertext, key, iv):
+	ciphertext = base64.b64decode(ciphertext)
+	cipher = AES.new(key, AES.MODE_CBC, iv)
+	return unpad(cipher.decrypt(ciphertext[BLOCK_SIZE/2:]))
+
+def pad(s):
+	return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
+
+def unpad(s):
+	return s[:-ord(s[len(s)-1:])]
 
 def download_processor():
 	# 1. Fetch transaction and files
 	# 2. Decrypt (combine them if they were separated)
 	# 3. Create download link
 	return
+
+

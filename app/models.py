@@ -5,7 +5,6 @@ import sys
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
 
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
@@ -54,6 +53,7 @@ class Transaction(db.Model):
     transaction_sellers = db.relationship('User', secondary=lambda: transactionsellers_table)
     buyer = db.Column(db.Integer, db.ForeignKey('user.id')) # One buyer
     secret_key = db.Column(db.String(1000))
+    secret_iv = db.Column(db.String(1000))
 
     sellers = association_proxy('transaction_sellers', 'user')
     files = association_proxy('transaction_files', 'file')
