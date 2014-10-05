@@ -53,6 +53,7 @@ class Transaction(db.Model):
     timestamp = db.Column(db.DateTime)
     transaction_sellers = db.relationship('User', secondary=lambda: transactionsellers_table)
     buyer = db.Column(db.Integer, db.ForeignKey('user.id')) # One buyer
+    secret_key = db.Column(db.String(1000))
 
     sellers = association_proxy('transaction_sellers', 'user')
     files = association_proxy('transaction_files', 'file')

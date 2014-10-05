@@ -10,16 +10,6 @@ import logging
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
 
-def current_user():
-	return User.query.filter_by(id=session.get('user_id')).first()
-
-def current_access_token():
-	user = current_user();
-	if user:
-		return user.dropbox_access_token
-	else:
-		return None
-
 @app.route('/')
 def index():
 	return render_template('index.html')
@@ -114,3 +104,40 @@ def sell():
 		db.session.commit()
 
 		return redirect(url_for('dashboard'))
+
+#############################################
+#
+# Extra Methods
+#
+#############################################
+
+def current_user():
+	return User.query.filter_by(id=session.get('user_id')).first()
+
+def current_access_token():
+	user = current_user();
+	if user:
+		return user.dropbox_access_token
+	else:
+		return None
+
+def upload_processor():
+	# 1. Fetch sellers and find best match/matches
+	fetch_sellers()
+	# 2. Encrypt file and store secret_key
+	encrypt_file()
+	# 3. Actually upload the file
+	# copy from above
+	return
+
+def fetch_sellers():
+	return
+
+def encrypt_file():
+	return
+
+def download_processor():
+	# 1. Fetch transaction and files
+	# 2. Decrypt (combine them if they were separated)
+	# 3. Create download link
+	return
