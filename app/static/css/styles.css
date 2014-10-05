@@ -28,10 +28,11 @@
 	background: black;
 }
 
-body {
+.wrapper {
 	background-image: url("../img/background-small-faded.png");
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
     background-attachment: fixed;
+    height: 100%;
 }
