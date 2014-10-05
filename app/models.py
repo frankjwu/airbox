@@ -2,6 +2,7 @@ from hashlib import md5
 import re
 from app import db, app
 import sys
+from sqlalchemy import desc
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
 
@@ -12,17 +13,35 @@ class User(db.Model):
     uid = db.Column(db.String(120), index=True, unique=True)
     dropbox_access_token = db.Column(db.String(1000))
     space_selling = db.Column(db.Integer, default=0)
+    space_left = db.Column(db.Integer, default=0)
 
-    def space_left(self):
-        space = self.space_selling
-        transactions = self.transactions
-        for t in transactions:
-            space -= t.total_size
-        return space
+    # def space_left(self):
+    #     space = self.space_selling
+    #     transactions = self.transactions
+    #     for t in transactions:
+    #         space -= t.total_size
+    #     return space
 
-    def transactions(self):
-        # TODO: define this
-        return True
+    # def transactions(self):
+    #     # TODO: define this
+    #     return True
+
+    @staticmethod
+    def get_max_seller(ignore):
+        users = User.query.filter(User.space_left != 0).order_by(desc(User.space_left)).all()
+        size = len(users)
+
+        # Ignore 'ignore' user so that we don't put consecutive blocks on same drive
+        if size == 0:
+            return None
+        else if size == 1: # Of course, if we only have one, just use that one
+            return users[0]
+        else:
+            i = 0
+            while i < size:
+                if users[i] != ignore:
+                    return users[i]
+                i += 1
 
     @staticmethod
     def fetch(id):

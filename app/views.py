@@ -6,9 +6,11 @@ import dropbox
 from .forms import BuyForm, SellForm
 from werkzeug import secure_filename
 import logging
+import math
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
+SPLIT_FILESIZE = 10.0
 
 @app.route('/')
 def index():
@@ -99,8 +101,10 @@ def sell():
 			redirect(url_for('dropbox_auth_start'))
 		if not g.user.space_selling:
 			g.user.space_selling = form.space.data
+			g.user_space_left = form.space.data
 		else:
 			g.user.space_selling += form.space.data
+			g.user_space_left += form.space.data
 		db.session.commit()
 
 		return redirect(url_for('dashboard'))
@@ -123,15 +127,33 @@ def current_access_token():
 
 def upload_processor():
 	# 1. Fetch sellers and find best match/matches
-	fetch_sellers()
+	sellers = fetch_sellers()
 	# 2. Encrypt file and store secret_key
 	encrypt_file()
 	# 3. Actually upload the file
 	# copy from above
 	return
 
-def fetch_sellers():
-	return
+# File size in MBs
+def fetch_sellers(file_size):
+	sellers = []
+	num_sellers = math.ceil(file_size / SPLIT_FILESIZE) # We split files amongst every 10 MB
+	found = 0
+	amount_needed = file_size
+	while (found < num_sellers):
+		# Find seller and add to sellers array
+		max_seller = User.get_max_seller(ignore)
+		if not max_seller
+			return None # ERROR: not enough sellers for this storage to happen
+		sellers.append(max_seller)
+		ignore = max_seller
+		
+		if amount_needed < SPLIT_FILESIZE:
+			amount_needed = 0
+		else:
+			amount_needed -= SPLIT_FILESIZE
+		found += 1
+	return sellers
 
 def encrypt_file():
 	return
