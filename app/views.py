@@ -257,7 +257,7 @@ def download_processor(t_id):
 	file_names = transaction.file_names
 
 	# 2. Decrypt (combine them if they were separated)
-	out = open("/tmp/" + transaction.original_name, 'wb')
+	out = open("/tmp/decrypt" + transaction.original_name, 'wb')
 	for f in file_names:
 		path = f.name
 		seller = User.fetch(f.seller_id)
@@ -269,10 +269,18 @@ def download_processor(t_id):
 
 		f, metadata = client.get_file_and_metadata(path)
 		text = f.read()
-		decrypted = decrypt_file(text, key)
-		out.write(decrypted)
+		out.write(text)
+		# out.write(decrypted)
 		# out.flush()
 	out.close()
+
+	tmp = open("/tmp/decrypt" + transaction.original_name, 'r')
+	decrypted = decrypt_file(tmp.read(), key)
+	tmp.close()
+
+	final = open("/tmp/" + transaction.original_name, 'wb')
+	final.write(decrypted)
+	final.close()
 
 	# 3. Create download link
 	return transaction.original_name
