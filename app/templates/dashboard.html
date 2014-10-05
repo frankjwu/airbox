@@ -8,9 +8,26 @@
           <h2>List your "space"</h2>
           <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
         </div>
-        <div class="sell-real hidden">
-          {% block upload %}
-          {% endblock upload %}
+        <div class="sell-real" style="display:none">
+          <h1>Upload a File</h1>
+          <form action="" method="post" name="upload" enctype="multipart/form-data">
+            {{ buy_form.hidden_tag() }}
+            <p>
+              Please enter your file name:<br>
+              {{ buy_form.name(size=80) }}<br>
+              {% for error in buy_form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+              {% endfor %}
+            </p>
+            <p>
+              Please attach your file:<br>
+              {{ buy_form.dropboxFile }}<br>
+              {% for error in buy_form.dropboxFile.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+              {% endfor %}
+            </p>
+            <p><input type="submit" value="Upload to airbox"></p>
+          </form>
         </div>
       </div>
       <div class="col-md-6">
@@ -36,4 +53,4 @@
     $(".buy-real").show();
   }
 </script>
-{% endblock %}
+{% endblock content %}

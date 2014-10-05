@@ -3,7 +3,7 @@ from app.models import *
 from flask import render_template, redirect, url_for, session, abort, request, g
 import os
 import dropbox
-from .forms import UploadFileForm
+from .forms import BuyForm, SellForm
 from werkzeug import secure_filename
 import logging
 
@@ -26,8 +26,14 @@ def index():
 
 @app.route('/dashboard')
 def dashboard():
+	buy_form = BuyForm()
+	sell_form = SellForm()
+
 	if current_access_token():
-		return render_template('dashboard.html')
+		return render_template('dashboard.html',
+			title='Buy and Sell',
+			buy_form = buy_form,
+			sell_form = sell_form)
 	else:
 		return redirect(url_for('dropbox_auth_start'))
 
@@ -63,7 +69,7 @@ def get_auth_flow():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
 	# Create the form
-	form = UploadFileForm()
+	form = BuyForm()
 	if form.validate_on_submit():
 		# if I'm posting, upload to dropbox
 		access_token = current_access_token()
