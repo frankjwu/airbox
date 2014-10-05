@@ -1,6 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
   <div class="container">
-    <h1>Dashboard</h1>
+    <div class="row">
+      <h1>Dashboard</h1>
+      <div class="col-md-6">
+        <div class="sell-splash">
+          <h2>List your "space"</h2>
+          <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
+        </div>
+        <div class="sell-real hidden">
+          {% block upload %}
+          {% endblock upload %}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="buy-splash">
+          <h2>Find your dream "space"</h2>
+          <button type="button" class="btn btn-default" onclick="showBuy()">Go</button>
+        </div>
+        <div class="sell-splash hidden">
+          
+        </div>
+      </div>
+    </div>
   </div>
+
+<script>
+  function showSell() {
+    $(".sell-splash").hide();
+    $(".sell-real").show();
+  }
+
+  function showBuy() {
+    $(".buy-splash").hide();
+    $(".buy-real").show();
+  }
+</script>
 {% endblock %}
