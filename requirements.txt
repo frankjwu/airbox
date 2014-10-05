@@ -11,3 +11,4 @@ itsdangerous==0.24
 urllib3==1.9.1
 wsgiref==0.1.2
 pycrypto==2.6
+gunicorn
