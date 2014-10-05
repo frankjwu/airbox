@@ -52,7 +52,6 @@ class User(db.Model):
     def fetch_by_uid(id):
         user = User.query.filter(User.uid == id).first()
         return user
-        
 
     def __init__(self, uid, name, dropbox_access_token):
         self.uid = uid
@@ -60,17 +59,28 @@ class User(db.Model):
         self.dropbox_access_token = dropbox_access_token
 
     def __repr__(self):
-        return '<User uid: %r name: %r dropbox_access_token: %r space_selling %r>' % (self.uid, self.name, self.dropbox_access_token, self.space_selling)    
+        return '<User uid: %r name: %r dropbox_access_token: %r space_selling %r>' % (self.uid, self.name, self.dropbox_access_token, self.space_selling)  
+
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(1000))
+
+    def __init__(self, name):
+        self.name = name  
 
 transaction_sellers = db.Table('transaction_sellers',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id')),
+    db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id'))
+)
+
+transaction_files = db.Table('transaction_files',
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id')),
+    db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id'))
 )
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Float)
-    # transaction_files = db.relationship('File', secondary=lambda: transactionfiles_table)
 
     original_name = db.Column(db.String(1000))
     encrypted_name = db.Column(db.String(1000))
@@ -80,66 +90,27 @@ class Transaction(db.Model):
     blocks = db.Column(db.Integer)
 
     timestamp = db.Column(db.DateTime)
-    # transaction_sellers = db.relationship('User', secondary=lambda: transactionsellers_table)
     buyer = db.Column(db.Integer, db.ForeignKey('user.id')) # One buyer
     sellers = db.relationship(User, secondary=transaction_sellers, backref=db.backref('transaction_sellers', lazy='dynamic'))
+    file_names = db.relationship(File, secondary=transaction_files, backref=db.backref('transaction_files', lazy='dynamic'))
 
-    # sellers = association_proxy('transaction_sellers', 'user')
-    # files = association_proxy('transaction_files', 'file')
-
-
-    def __init__(self, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, blocks):
+    def __init__(self, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, file_array, blocks):
         self.original_name = original_name
         self.encrypted_name = encrypted_name
         self.extension = extension
         self.file_size = file_size
         self.secret_key = secret_key
         self.buyer = buyer_id
+
         for s in seller_array:
             self.sellers.append(s)
+
+        for f in file_array:
+            item = File(str(f))
+            self.file_names.append(item)
+        
         self.blocks = blocks
         self.timestamp = datetime.now()
 
-# transactionsellers_table = db.Table(
-#     'transactionsellers',
-#     db.metadata,
-#     db.Column(
-#         'transaction_id',
-#         db.Integer,
-#         db.ForeignKey("transaction.id"),
-#         primary_key=True
-#     ),
-#     db.Column(
-#         'seller_id',
-#         db.Integer,
-#         db.ForeignKey("user.id"),
-#         primary_key=True
-#     )
-# )
-
-# transactionfiles_table = db.Table(
-#     'transactionfiles',
-#     db.metadata,
-#     db.Column(
-#         'transaction_id',
-#         db.Integer,
-#         db.ForeignKey("transaction.id"),
-#         primary_key=True
-#     ),
-#     db.Column(
-#         'file_id',
-#         db.Integer,
-#         db.ForeignKey("file.id"),
-#         primary_key=True
-#     )
-# )
-
-# class File(db.Model):
-#     __tablename__ = 'file'
-#     id = db.Column(db.Integer, primary_key=True, nullable=False)
-#     name = db.Column(db.String(1000))
-#     size = db.Column(db.Float)
-#     # Link?
-#     def __init__(self, name, size):
-#         self.problem = problem
-#         self.size = size
+    def __repr__(self):
+        return '<User original_name: %r>' % (self.original_name)
