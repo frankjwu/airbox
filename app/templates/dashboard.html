@@ -1,51 +1,65 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="wrapper">
   <div class="container">
+    <ul class="meta">
+      <li><a href="/">Home</a></li>
+      <li><a href="/logout">Logout</a></li>
+    </ul>
     <div class="row">
-      <h1>Dashboard</h1>
       <div class="col-md-6">
         <div class="buy-splash">
-          <h2>Find your dream "space"</h2>
-          <button type="button" class="btn btn-default" onclick="showBuy()">Go</button>
+          <h2>Find space</h2>
+          <button type="button" class="btn btn-default" onclick="showBuy()">Explore</button>
+
+          {% if user.transactions %}
+            <hr>
+            <h2>Your downloads</h2>
+            <ul>
+              {% for t in user.transactions() %}
+                <li><a href="/download?id={{ t.id }}">{{ t.original_name }}</a></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </div>
         <div class="buy-real" style="display:none">
-          <h1>Upload a File</h1>
+          <h2>Upload a file</h2>
           <form action="/buy" method="post" name="upload" enctype="multipart/form-data">
             {{ buy_form.hidden_tag() }}
             <p>
-              Please attach your file:<br>
               {{ buy_form.dropboxFile }}<br>
               {% for error in buy_form.dropboxFile.errors %}
                 <span style="color: red;">[{{ error }}]</span>
               {% endfor %}
             </p>
-            <p><input type="submit" value="Upload to airbox"></p>
+            <p><input class="btn btn-default" type="submit" value="Upload to airbox"></p>
           </form>
         </div>
       </div>
       <div class="col-md-6">
         <div class="sell-splash">
-          <h2>List your "space"</h2>
-          {{ user.space_selling }}
-          <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
+          <h2>Rent out your space</h2>
+          <p>{{ (user.space_left / 1000000)|round|int }} MB out of {{ (user.space_selling / 1000000)|round|int }} MB of your Dropbox space is still available for rent on Airbox.</p>
+          <button type="button" class="btn btn-default" onclick="showSell()">Rent out more?</button>
         </div>
         <div class="sell-real" style="display:none">
           <h1>Sell your space</h1>
           <form action="/sell" method="post" name="list">
             {{ sell_form.hidden_tag() }}
             <p> 
-              How much space are you putting up for sale? (in MB)<br>
+              How much more space do you want to add?<br>
               {{ sell_form.space }}<br>
               {% for error in sell_form.space.errors %}
                 <span style="color: red;">[{{ error }}]</span>
               {% endfor %}
             </p>
-            <p><input type="submit" value="Verify Listing"></p>
+            <p><input class="btn btn-default" type="submit" value="Verify Listing"></p>
           </form>
         </div>
       </div>
     </div>
   </div>
+</div>
 
 <script>
   function showSell() {

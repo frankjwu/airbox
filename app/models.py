@@ -22,9 +22,9 @@ class User(db.Model):
     #         space -= t.total_size
     #     return space
 
-    # def transactions(self):
-    #     # TODO: define this
-    #     return True
+    def transactions(self):
+        transactions = Transaction.query.filter_by(buyer = self.id).all()
+        return transactions
 
     @staticmethod
     def get_max_seller(ignore=None):

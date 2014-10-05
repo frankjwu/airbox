@@ -66,6 +66,11 @@ def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
 	return dropbox.client.DropboxOAuth2Flow(AIRBOX_DROPBOX_APP_KEY, AIRBOX_DROPBOX_APP_SECRET, redirect_uri, session, 'dropbox-auth-csrf-token')
 
+@app.route('/logout')
+def logout():
+	session.clear()
+	return redirect(url_for('index'))
+
 @app.route('/buy', methods=['GET', 'POST'])
 def upload():
 	# Create the form
@@ -84,6 +89,8 @@ def download():
 
 @app.route('/sell', methods=['POST'])
 def sell():
+	if not response:
+		return redirect(url_for('dashboard'))
 	form = SellForm()
 	if form.validate_on_submit():
 		#
@@ -164,6 +171,8 @@ def upload_processor(upload):
 
 	# 2. Fetch sellers and find best match/matches
 	sellers = fetch_sellers(file_size)
+	if not sellers:
+		return "Error"
 	blocks = len(sellers)
 
 	file_names = []
@@ -212,6 +221,8 @@ def fetch_sellers(file_size):
 		max_seller = User.get_max_seller(ignore)
 		if not max_seller:
 			return None # ERROR: not enough sellers for this storage to happen
+		elif max_seller.space_left < amount_needed:
+			return None # ERROR: not enough bytes to make this happen
 		sellers.append(max_seller)
 		ignore = max_seller
 
