@@ -89,8 +89,6 @@ def download():
 
 @app.route('/sell', methods=['POST'])
 def sell():
-	if not response:
-		return redirect(url_for('dashboard'))
 	form = SellForm()
 	if form.validate_on_submit():
 		#
@@ -273,7 +271,7 @@ def download_processor(t_id):
 		text = f.read()
 		decrypted = decrypt_file(text, key)
 		out.write(decrypted)
-		out.flush()
+		# out.flush()
 	out.close()
 
 	# 3. Create download link
