@@ -83,11 +83,10 @@ def upload():
 
 		if request.method == 'POST':
 			upload = request.files['dropboxFile']
-			response = client.put_file('/'+form.name.data, upload)
+			# request.files['asd'].size, # request.files['asd'].content_type
+			response = client.put_file('/'+upload.filename, upload)
 		return redirect(url_for('index'))
-	return render_template('uploadFile.html',
-		title='Upload A File',
-		form = form)
+	return redirect(url_for('dashboard'))
 
 @app.route('/download')
 def download():
