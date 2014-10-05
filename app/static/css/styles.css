@@ -78,11 +78,33 @@ span#dropbox {
   font-size: 1.8em;
 }
 
+ul.meta {
+  margin-top: 50px;
+  text-align: right;
+  list-style: none;
+}
+
+.meta li {
+  margin-left: 50px;
+  display: inline-block;
+}
+
+.meta li a, .meta li a:hover {
+  font-size: 18px;
+  text-decoration: none;
+  color: #2E217A;
+}
+
 .buy-splash, .buy-real,
 .sell-splash, .sell-real {
-  margin-top: 11%;
+  margin-top: 35px;
   padding: 50px 80px;
   background-color: white;
   border-radius: 8px;
-  border: 2px solid #2E217A;
+  border: 3px solid #2E217A;
+}
+
+.buy-splash hr {
+  margin: 40px 0;
+  border-color: #2E217A;
 }

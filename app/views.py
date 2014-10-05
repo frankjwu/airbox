@@ -65,6 +65,11 @@ def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
 	return dropbox.client.DropboxOAuth2Flow(AIRBOX_DROPBOX_APP_KEY, AIRBOX_DROPBOX_APP_SECRET, redirect_uri, session, 'dropbox-auth-csrf-token')
 
+@app.route('/logout')
+def logout():
+	session.clear()
+	return redirect(url_for('index'))
+
 @app.route('/buy', methods=['GET', 'POST'])
 def upload():
 	# Create the form
@@ -83,6 +88,8 @@ def download():
 
 @app.route('/sell', methods=['POST'])
 def sell():
+	if not response:
+		return redirect(url_for('dashboard'))
 	form = SellForm()
 	if form.validate_on_submit():
 		#
