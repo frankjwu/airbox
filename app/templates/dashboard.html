@@ -4,11 +4,11 @@
     <div class="row">
       <h1>Dashboard</h1>
       <div class="col-md-6">
-        <div class="sell-splash">
+        <div class="buy-splash">
           <h2>List your "space"</h2>
-          <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
+          <button type="button" class="btn btn-default" onclick="showBuy()">Go</button>
         </div>
-        <div class="sell-real" style="display:none">
+        <div class="buy-real" style="display:none">
           <h1>Upload a File</h1>
           <form action="" method="post" name="upload" enctype="multipart/form-data">
             {{ buy_form.hidden_tag() }}
@@ -31,12 +31,23 @@
         </div>
       </div>
       <div class="col-md-6">
-        <div class="buy-splash">
+        <div class="sell-splash">
           <h2>Find your dream "space"</h2>
-          <button type="button" class="btn btn-default" onclick="showBuy()">Go</button>
+          <button type="button" class="btn btn-default" onclick="showSell()">Go</button>
         </div>
-        <div class="sell-splash hidden">
-          
+        <div class="sell-real" style="display:none">
+          <h1>Sell your space</h1>
+          <form action="" method="post" name="list">
+            {{ sell_form.hidden_tag() }}
+            <p> 
+              How much space are you putting up for sale?<br>
+              {{ sell_form.space }}<br>
+              {% for error in sell_form.space.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+              {% endfor %}
+            </p>
+            <p><input type="submit" value="Verify Listing"></p>
+          </form>
         </div>
       </div>
     </div>
