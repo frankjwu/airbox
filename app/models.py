@@ -27,7 +27,7 @@ class User(db.Model):
     #     return True
 
     @staticmethod
-    def get_max_seller(ignore):
+    def get_max_seller(ignore=None):
         users = User.query.filter(User.space_left != 0).order_by(desc(User.space_left)).all()
         size = len(users)
 
