@@ -1,6 +1,6 @@
 from app import app, db
 from app.models import *
-from flask import render_template, redirect, url_for, session, abort, request, g, send_from_directory
+from flask import render_template, redirect, url_for, session, abort, request, g, send_from_directory, make_response
 import os
 import dropbox
 from .forms import BuyForm, SellForm
@@ -84,8 +84,13 @@ def upload():
 
 @app.route('/download')
 def download():
-	original_file = download_processor(request.args["id"])
+	original_file, extension = download_processor(request.args["id"])
 	return send_from_directory("/tmp", original_file)
+	# response = make_response()
+	# response.headers['Cache-Control'] = 'no-cache'
+	# response.headers['Content-Type'] = extension
+	# response.headers['X-Accel-Redirect'] = '/tmp/' + original_file
+	# return response
 
 @app.route('/sell', methods=['POST'])
 def sell():
@@ -127,31 +132,30 @@ def current_access_token():
 
 def generate_friendly_name():
 	# https://gist.github.com/hemanth/3205763
-  # example output: "falling-late-violet-forest-d27b3"
-  adjs = [ "autumn", "hidden", "bitter", "misty", "silent", "empty", "dry", "dark",
-        "summer", "icy", "delicate", "quiet", "white", "cool", "spring", "winter",
-        "patient", "twilight", "dawn", "crimson", "wispy", "weathered", "blue",
-        "billowing", "broken", "cold", "damp", "falling", "frosty", "green",
-        "long", "late", "lingering", "bold", "little", "morning", "muddy", "old",
-        "red", "rough", "still", "small", "sparkling", "throbbing", "shy",
-        "wandering", "withered", "wild", "black", "young", "holy", "solitary",
-        "fragrant", "aged", "snowy", "proud", "floral", "restless", "divine",
-        "polished", "ancient", "purple", "lively", "nameless"
-    ]
-  nouns = [ "waterfall", "river", "breeze", "moon", "rain", "wind", "sea", "morning",
-        "snow", "lake", "sunset", "pine", "shadow", "leaf", "dawn", "glitter",
-        "forest", "hill", "cloud", "meadow", "sun", "glade", "bird", "brook",
-        "butterfly", "bush", "dew", "dust", "field", "fire", "flower", "firefly",
-        "feather", "grass", "haze", "mountain", "night", "pond", "darkness",
-        "snowflake", "silence", "sound", "sky", "shape", "surf", "thunder",
-        "violet", "water", "wildflower", "wave", "water", "resonance", "sun",
-        "wood", "dream", "cherry", "tree", "fog", "frost", "voice", "paper",
-        "frog", "smoke", "star"
-    ]
-  hex = "0123456789abcdef"
-  return (random.choice(adjs) + "-" + random.choice(adjs) + "-" + random.choice(nouns) + "-" + random.choice(nouns) + "-" + 
-            random.choice(hex) + random.choice(hex) + random.choice(hex) + random.choice(hex) + random.choice(hex))
-	
+	# example output: "falling-late-violet-forest-d27b3"
+	adjs = [ "autumn", "hidden", "bitter", "misty", "silent", "empty", "dry", "dark",
+				"summer", "icy", "delicate", "quiet", "white", "cool", "spring", "winter",
+				"patient", "twilight", "dawn", "crimson", "wispy", "weathered", "blue",
+				"billowing", "broken", "cold", "damp", "falling", "frosty", "green",
+				"long", "late", "lingering", "bold", "little", "morning", "muddy", "old",
+				"red", "rough", "still", "small", "sparkling", "throbbing", "shy",
+				"wandering", "withered", "wild", "black", "young", "holy", "solitary",
+				"fragrant", "aged", "snowy", "proud", "floral", "restless", "divine",
+				"polished", "ancient", "purple", "lively", "nameless"
+		]
+	nouns = [ "waterfall", "river", "breeze", "moon", "rain", "wind", "sea", "morning",
+				"snow", "lake", "sunset", "pine", "shadow", "leaf", "dawn", "glitter",
+				"forest", "hill", "cloud", "meadow", "sun", "glade", "bird", "brook",
+				"butterfly", "bush", "dew", "dust", "field", "fire", "flower", "firefly",
+				"feather", "grass", "haze", "mountain", "night", "pond", "darkness",
+				"snowflake", "silence", "sound", "sky", "shape", "surf", "thunder",
+				"violet", "water", "wildflower", "wave", "water", "resonance", "sun",
+				"wood", "dream", "cherry", "tree", "fog", "frost", "voice", "paper",
+				"frog", "smoke", "star"
+		]
+	hex = "0123456789abcdef"
+	return (random.choice(adjs) + "-" + random.choice(adjs) + "-" + random.choice(nouns) + "-" + random.choice(nouns) + "-" + 
+						random.choice(hex) + random.choice(hex) + random.choice(hex) + random.choice(hex) + random.choice(hex))
 
 def upload_processor(upload):
 	orig_name = upload.filename
@@ -162,14 +166,16 @@ def upload_processor(upload):
 	text, key = encrypt_file(upload_file)
 	folder = generate_friendly_name()
 	name = generate_friendly_name()
-	enc_file = open("/tmp/" + name, 'wb')
+	enc_file = open("/tmp/" + name, 'w')
 	enc_file.write(text)
 	enc_file.close()
 	file_size = os.path.getsize("/tmp/" + name) # Bytes
+	print file_size
 
 	# 2. Fetch sellers and find best match/matches
 	sellers = fetch_sellers(file_size)
 	if not sellers:
+		print "No sellers"
 		return "Error"
 	blocks = len(sellers)
 
@@ -187,6 +193,7 @@ def upload_processor(upload):
 
 		access_token = sellers[i].dropbox_access_token
 		if not access_token:
+			print "No access token"
 			return "Error"
 		client = dropbox.client.DropboxClient(str(access_token))
 
@@ -194,6 +201,7 @@ def upload_processor(upload):
 
 		response = client.put_file('/airbox_uploads/' + name, data)
 		if not response:
+			print "No response"
 			return "Error"
 		file_names.append(response["path"])
 
@@ -210,7 +218,8 @@ def upload_processor(upload):
 
 def fetch_sellers(file_size):
 	sellers = []
-	num_sellers = math.ceil(file_size / float(SPLIT_FILESIZE)) # We split files based on this number
+	num_sellers = math.ceil((file_size * 1.0) / SPLIT_FILESIZE) # We split files based on this number
+	print num_sellers
 	found = 0
 	amount_needed = file_size
 	ignore = None
@@ -257,7 +266,7 @@ def download_processor(t_id):
 	file_names = transaction.file_names
 
 	# 2. Decrypt (combine them if they were separated)
-	out = open("/tmp/decrypt" + transaction.original_name, 'wb')
+	out = open("/tmp/decrypt" + transaction.original_name, 'w')
 	for f in file_names:
 		path = f.name
 		seller = User.fetch(f.seller_id)
@@ -277,10 +286,11 @@ def download_processor(t_id):
 	tmp = open("/tmp/decrypt" + transaction.original_name, 'r')
 	decrypted = decrypt_file(tmp.read(), key)
 	tmp.close()
+	# out.close()
 
-	final = open("/tmp/" + transaction.original_name, 'wb')
+	final = open("/tmp/" + transaction.original_name, 'w')
 	final.write(decrypted)
 	final.close()
 
 	# 3. Create download link
-	return transaction.original_name
+	return transaction.original_name, transaction.extension
