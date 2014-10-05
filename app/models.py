@@ -64,6 +64,7 @@ class User(db.Model):
 
 transaction_sellers = db.Table('transaction_sellers',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('file_path', db.String(1000)),
     db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id')),
 )
 
@@ -89,7 +90,7 @@ class Transaction(db.Model):
     # files = association_proxy('transaction_files', 'file')
 
 
-    def __init__(self, folder_name, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, blocks):
+    def __init__(self, folder_name, original_name, encrypted_name, extension, file_size, secret_key, buyer_id, seller_array, file_array, blocks):
         self.folder_name = folder_name
         self.original_name = original_name
         self.encrypted_name = encrypted_name
@@ -97,8 +98,13 @@ class Transaction(db.Model):
         self.file_size = file_size
         self.secret_key = secret_key
         self.buyer = buyer_id
+
+        i = 0
         for s in seller_array:
             self.sellers.append(s)
+            s.file_path = file_array[i]
+            i += 1
+        
         self.blocks = blocks
         self.timestamp = datetime.now()
 

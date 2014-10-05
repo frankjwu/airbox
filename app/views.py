@@ -168,6 +168,8 @@ def upload_processor(upload):
 	sellers = fetch_sellers(file_size)
 	blocks = len(sellers)
 
+	file_names = []
+
 	# 3. Actually upload the file
 	counter_file_size = file_size
 	tmp = open("/tmp/" + name, "r")
@@ -188,6 +190,7 @@ def upload_processor(upload):
 		response = client.put_file('/airbox-' + folder + "/" + name, data)
 		if not response:
 			return "Error"
+		file_names.append(response["path"])
 
 		sellers[i].space_left -= counter_file_size
 		counter_file_size -= SPLIT_FILESIZE
@@ -195,7 +198,7 @@ def upload_processor(upload):
 
 	tmp.close()
 
-	transaction = Transaction(folder, orig_name, name, orig_extension, file_size, key, current_user().id, sellers, blocks)
+	transaction = Transaction(folder, orig_name, name, orig_extension, file_size, key, current_user().id, sellers, file_names, blocks)
 	db.session.add(transaction)
 	db.session.commit()
 	return transaction
