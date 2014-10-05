@@ -59,7 +59,7 @@ def dropbox_auth_finish():
 		# Save
 		db.session.commit()
 		session['user_id'] = g.user.id
-	return redirect(url_for('index'))
+	return redirect(url_for('dashboard'))
 
 def get_auth_flow():
 	redirect_uri = url_for('dropbox_auth_finish', _external=True)
