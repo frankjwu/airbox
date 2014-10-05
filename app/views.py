@@ -11,6 +11,7 @@ from Crypto.Cipher import AES
 import base64
 import hashlib
 import math
+import random
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
@@ -122,7 +123,7 @@ def current_access_token():
 	else:
 		return None
 
-def generate_friendly_name()
+def generate_friendly_name():
 	# https://gist.github.com/hemanth/3205763
   # example output: "falling-late-violet-forest-d27b3"
   adjs = [ "autumn", "hidden", "bitter", "misty", "silent", "empty", "dry", "dark",
@@ -185,7 +186,7 @@ def upload_processor(upload):
 
 		data = tmp.read(to_read) # Read next bytes (the block we want here)
 
-		response = client.put_file('/airbox-' + folder + "/" + name, data)
+		response = client.put_file('/airbox_uploads/' + name, data)
 		if not response:
 			return "Error"
 
@@ -195,7 +196,7 @@ def upload_processor(upload):
 
 	tmp.close()
 
-	transaction = Transaction(folder, orig_name, name, orig_extension, file_size, key, current_user().id, sellers, blocks)
+	transaction = Transaction(orig_name, name, orig_extension, file_size, key, current_user().id, sellers, blocks)
 	db.session.add(transaction)
 	db.session.commit()
 	return transaction
