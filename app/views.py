@@ -79,7 +79,7 @@ def upload():
 		# Upload to dropbox
 		if request.method == 'POST':
 			transaction = upload_processor(request.files['dropboxFile'])
-		return redirect(url_for('index'))
+		return redirect(url_for('dashboard'))
 	return redirect(url_for('dashboard'))
 
 @app.route('/download')
