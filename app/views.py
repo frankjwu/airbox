@@ -66,9 +66,8 @@ def upload():
 	form = UploadFileForm()
 	if form.validate_on_submit():
 		# if I'm posting, upload to dropbox
-		access_token = current_access_token
-		access_token = "CHwtkpb0-90AAAAAAAAKIDizJGns6cfTivckPjBwV5ddGcASpMcJZ9SOSDPAOOLm" # Temporary
-		client = dropbox.client.DropboxClient(access_token)
+		access_token = current_access_token()
+		client = dropbox.client.DropboxClient(str(access_token))
 
 		if request.method == 'POST':
 			upload = request.files['dropboxFile']
