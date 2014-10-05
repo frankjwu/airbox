@@ -24,6 +24,10 @@ class User(db.Model):
         # TODO: define this
         return True
 
+    @static_method
+    def fetch(id):
+        User.query(uid = id)
+
     def __init__(self, uid, name, dropbox_access_token):
         self.uid = uid
         self.name = name
