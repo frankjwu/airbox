@@ -71,7 +71,7 @@ def upload():
 	if form.validate_on_submit():
 		# Upload to dropbox
 		if request.method == 'POST':
-			upload_processor(request.files['dropboxFile'])
+			transaction = upload_processor(request.files['dropboxFile'])
 		return redirect(url_for('index'))
 	return redirect(url_for('dashboard'))
 
@@ -94,12 +94,14 @@ def sell():
 		g.user = current_user()
 		if not g.user:
 			redirect(url_for('dropbox_auth_start'))
+
+		# We ask for MB, but convert instead to bytes
 		if not g.user.space_selling:
-			g.user.space_selling = form.space.data
-			g.user.space_left = form.space.data
+			g.user.space_selling = form.space.data * 1000000
+			g.user.space_left = form.space.data * 1000000
 		else:
-			g.user.space_selling += form.space.data
-			g.user.space_left += form.space.data
+			g.user.space_selling += form.space.data * 1000000
+			g.user.space_left += form.space.data * 1000000
 		db.session.commit()
 
 		return redirect(url_for('dashboard'))
@@ -122,12 +124,13 @@ def current_access_token():
 
 def upload_processor(upload):
 	orig_name = upload.filename
+	orig_extension = upload.content_type
 	upload_file = upload.stream.read()
 
 	# 1. Encrypt file and store secret_key
-	text, key, iv = encrypt_file(upload_file)
-	folder = Random.new().read(10)
-	name = Random.new().read(20)
+	text, key = encrypt_file(upload_file)
+	folder = Random.new().read(10) # TODO: take out invalid folder chars
+	name = Random.new().read(20) # TODO: take out invalid file chars
 	enc_file = open("/tmp/" + name, 'wb')
 	enc_file.write(text)
 	enc_file.close()
@@ -138,24 +141,38 @@ def upload_processor(upload):
 	blocks = len(sellers)
 
 	# 3. Actually upload the file
-	i = 0
-	while (i < blocks):
+	counter_file_size = file_size
+	tmp = open("/tmp/" + name, "r")
+	while (counter_file_size > 0):
+		if counter_file_size > SPLIT_FILESIZE:
+			to_read = SPLIT_FILESIZE
+		else:
+			to_read = counter_file_size
+
 		access_token = sellers[i].dropbox_access_token
 		if not access_token:
 			return "Error"
 		client = dropbox.client.DropboxClient(str(access_token))
-		tmp = open("/tmp/" + name, "r")
-		response = client.put_file('/airbox' + folder + "/" + name, tmp)
-		tmp.close()
+
+		data = temp.read(to_read) # Read next bytes (the block we want here)
+
+		response = client.put_file('/airbox' + folder + "/" + name, data)
 		if not response:
 			return "Error"
-		i += 1
-	return redirect(url_for('dashboard'))
 
-# File size in MBs
+		sellers[i].space_left -= counter_file_size
+		counter_file_size -= SPLIT_FILESIZE
+
+	tmp.close()
+
+	transaction = Transaction(folder, orig_name, name, orig_extension, file_size, key, current_user.id, sellers, blocks)
+	db.session.add(transaction)
+	db.session.commit()
+	return transaction
+
 def fetch_sellers(file_size):
 	sellers = []
-	num_sellers = math.ceil(file_size / SPLIT_FILESIZE) # We split files amongst every 10 MB
+	num_sellers = math.ceil(file_size / SPLIT_FILESIZE) # We split files based on this number
 	found = 0
 	amount_needed = file_size
 	ignore = None
@@ -183,10 +200,11 @@ def encrypt_file(plaintext):
 	key = key_gen()
 	cipher = AES.new(key, AES.MODE_CBC, iv)
 	res = base64.b64encode(iv + cipher.encrypt(plaintext))
-	return res, key, iv
+	return res, key
 
-def decrypt_file(ciphertext, key, iv):
+def decrypt_file(ciphertext, key):
 	ciphertext = base64.b64decode(ciphertext)
+	iv = ciphertext[:BLOCK_SIZE/2]
 	cipher = AES.new(key, AES.MODE_CBC, iv)
 	return unpad(cipher.decrypt(ciphertext[BLOCK_SIZE/2:]))
 

@@ -34,7 +34,7 @@
           <form action="/sell" method="post" name="list">
             {{ sell_form.hidden_tag() }}
             <p> 
-              How much space are you putting up for sale?<br>
+              How much space are you putting up for sale? (in MB)<br>
               {{ sell_form.space }}<br>
               {% for error in sell_form.space.errors %}
                 <span style="color: red;">[{{ error }}]</span>
