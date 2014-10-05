@@ -77,7 +77,7 @@ class Transaction(db.Model):
     encrypted_name = db.Column(db.String(1000))
     extension = db.Column(db.String(100))
     file_size = db.Column(db.Integer) # in bytes
-    secret_key = db.Column(db.String(1000))
+    secret_key = db.Column(db.LargeBinary)
     blocks = db.Column(db.Integer)
 
     timestamp = db.Column(db.DateTime)

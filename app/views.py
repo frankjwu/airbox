@@ -122,6 +122,9 @@ def current_access_token():
 	else:
 		return None
 
+def generate_friendly_names():
+	
+
 def upload_processor(upload):
 	orig_name = upload.filename
 	orig_extension = upload.content_type
@@ -143,7 +146,8 @@ def upload_processor(upload):
 	# 3. Actually upload the file
 	counter_file_size = file_size
 	tmp = open("/tmp/" + name, "r")
-	while (counter_file_size > 0):
+	i = 0
+	while (i < blocks):
 		if counter_file_size > SPLIT_FILESIZE:
 			to_read = SPLIT_FILESIZE
 		else:
@@ -154,7 +158,7 @@ def upload_processor(upload):
 			return "Error"
 		client = dropbox.client.DropboxClient(str(access_token))
 
-		data = temp.read(to_read) # Read next bytes (the block we want here)
+		data = tmp.read(to_read) # Read next bytes (the block we want here)
 
 		response = client.put_file('/airbox' + folder + "/" + name, data)
 		if not response:
@@ -162,10 +166,11 @@ def upload_processor(upload):
 
 		sellers[i].space_left -= counter_file_size
 		counter_file_size -= SPLIT_FILESIZE
+		i += 1
 
 	tmp.close()
 
-	transaction = Transaction(folder, orig_name, name, orig_extension, file_size, key, current_user.id, sellers, blocks)
+	transaction = Transaction(folder, orig_name, name, orig_extension, file_size, key, current_user().id, sellers, blocks)
 	db.session.add(transaction)
 	db.session.commit()
 	return transaction
