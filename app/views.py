@@ -1,5 +1,6 @@
-from app import app
-from flask import render_template, redirect, url_for, session, abort, request
+from app import app, db
+from app.models import *
+from flask import render_template, redirect, url_for, session, abort, request, g
 import os
 import dropbox
 from .forms import UploadFileForm
@@ -8,6 +9,9 @@ import logging
 
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
+
+def get_current_user():
+	return User.query.filter_by(id=session.get('user_id')).first()
 
 @app.route('/')
 def index():
@@ -26,7 +30,10 @@ def dropbox_auth_finish():
 	except:
 		abort(400)
 	else:
-		session['access_token'] = access_token
+		account_info = dropbox.client.DropboxClient(access_token).account_info()
+		g.user = User(account_info["uid"], account_info["display_name"], access_token)
+		db.session.add(g.user)
+		db.session.commit()
 	return redirect(url_for('index'))
 
 def get_auth_flow():
