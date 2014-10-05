@@ -34,7 +34,7 @@ class User(db.Model):
         # Ignore 'ignore' user so that we don't put consecutive blocks on same drive
         if size == 0:
             return None
-        else if size == 1: # Of course, if we only have one, just use that one
+        elif size == 1: # Of course, if we only have one, just use that one
             return users[0]
         else:
             i = 0

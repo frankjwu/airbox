@@ -143,11 +143,11 @@ def fetch_sellers(file_size):
 	while (found < num_sellers):
 		# Find seller and add to sellers array
 		max_seller = User.get_max_seller(ignore)
-		if not max_seller
+		if not max_seller:
 			return None # ERROR: not enough sellers for this storage to happen
 		sellers.append(max_seller)
 		ignore = max_seller
-		
+
 		if amount_needed < SPLIT_FILESIZE:
 			amount_needed = 0
 		else:
