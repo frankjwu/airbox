@@ -33,7 +33,8 @@ def dashboard():
 		return render_template('dashboard.html',
 			title='Buy and Sell',
 			buy_form = buy_form,
-			sell_form = sell_form)
+			sell_form = sell_form,
+			user = current_user())
 	else:
 		return redirect(url_for('dropbox_auth_start'))
 
@@ -101,6 +102,9 @@ def download():
 def sell():
 	form = SellForm()
 	if form.validate_on_submit():
+		#
+		# TODO: Check that the user has enough free space to add this in
+		#
 		g.user = current_user()
 		if not g.user:
 			redirect(url_for('dropbox_auth_start'))
