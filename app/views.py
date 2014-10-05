@@ -19,7 +19,9 @@ def index():
 
 @app.route('/authenticate')
 def dropbox_auth_start():
+	# if not 'access_token' in session:
 	return redirect(get_auth_flow().start())
+	# return 'Authenticated.'
 
 @app.route('/authenticate-finish')
 def dropbox_auth_finish():
@@ -44,28 +46,22 @@ def upload():
 	form = UploadFileForm()
 	if form.validate_on_submit():
 		# if I'm posting, upload to dropbox
+		access_token = "CHwtkpb0-90AAAAAAAAKIDizJGns6cfTivckPjBwV5ddGcASpMcJZ9SOSDPAOOLm" # Temporary
+		client = dropbox.client.DropboxClient(access_token)
+
 		if request.method == 'POST':
-			file_obj = request.files['file']
-			client = dropbox.client
-			filename = secure_filename(file_obj.name)
-			result = client.put_file('/' + filename, file_obj.read())
-			path = result['path'].lstrip('/')
-			return redirect(url_for('index', filename=path))
-		
-		return redirect('/index')
-	
+			upload = request.files['dropboxFile']
+			response = client.put_file('/'+form.name.data, upload)
+		return redirect(url_for('index'))
 	return render_template('uploadFile.html',
 		title='Upload A File',
 		form = form)
 
-@app.route('/download')
-def download():
-	f, metadata = dropbox.client.get_file_and_metadata('/'+form.name)
-	out = open(form.name, 'wb')
-	out.write(f.read())
-	out.close()
-
-	
-	
-	
-
+# @app.route('/download')
+# def download():
+	# access_token = models.User
+	# client = dropbox.client.DropboxClient(access_token)
+	# f, metadata = client.get_file_and_metadata('/'+request.args['filename'])
+	# out = open(request.args['filename'], 'wb')
+	# out.write(f.read())
+	# out.close()

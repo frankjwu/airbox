@@ -2,7 +2,7 @@
 
 {% block content %}
 	<h1>Upload a File</h1>
-	<form action="" method="post" name="login">
+	<form action="" method="post" name="upload" enctype="multipart/form-data">
 		{{ form.hidden_tag() }}
 		<p>
 			Please enter your file name:<br>

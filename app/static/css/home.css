@@ -1,0 +1,11 @@
+.home-logo {
+	text-align: center;
+	margin: 0 auto;
+	margin-top: 100px;
+	margin-bottom: 100px;
+}
+
+.home-logo h1 {
+	color: gray;
+	font-size: 1.8em;
+}
