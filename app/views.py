@@ -15,7 +15,7 @@ import math
 AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
 AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
 BLOCK_SIZE = 32
-SPLIT_FILESIZE = 10.0
+SPLIT_FILESIZE = 10000000 # in bytes. this is 10MB
 
 @app.route('/')
 def index():
@@ -70,18 +70,8 @@ def upload():
 	form = BuyForm()
 	if form.validate_on_submit():
 		# Upload to dropbox
-		#
-		# TODO: Find token or tokens to upload to
-		#
-		access_token = current_access_token()
-		if not access_token:
-			redirect(url_for('dropbox_auth_start'))
-		client = dropbox.client.DropboxClient(str(access_token))
-
 		if request.method == 'POST':
-			upload = request.files['dropboxFile']
-			# request.files['asd'].size, # request.files['asd'].content_type
-			response = client.put_file('/'+upload.filename, upload)
+			upload_processor(request.files['dropboxFile'])
 		return redirect(url_for('index'))
 	return redirect(url_for('dashboard'))
 
@@ -130,14 +120,35 @@ def current_access_token():
 	else:
 		return None
 
-def upload_processor():
-	# 1. Fetch sellers and find best match/matches
-	sellers = fetch_sellers()
-	# 2. Encrypt file and store secret_key
-	encrypt_file()
+def upload_processor(upload):
+	orig_name = upload.filename
+	upload_file = open(upload, 'r')
+
+	# 1. Encrypt file and store secret_key
+	text, key, iv = encrypt_file(upload_file.read())
+	folder = Random.new().read(10)
+	name = Random.new().read(20)
+	enc_file = open("/tmp/" + name, 'wb')
+	enc_file.write(text)
+	enc_file.close()
+	file_size = os.path.getsize("/tmp/" + name) # Bytes
+
+	# 2. Fetch sellers and find best match/matches
+	sellers = fetch_sellers(file_size)
+	blocks = len(sellers)
+
 	# 3. Actually upload the file
-	# copy from above
-	return
+	i = 0
+	while (i < blocks)
+		access_token = sellers[i].dropbox_access_token
+		if not access_token:
+			return "Error"
+		client = dropbox.client.DropboxClient(str(access_token))
+		response = client.put_file('/airbox' + folder + "/" + name, enc_file)
+		if not response:
+			return "Error"
+		i += 1
+	return redirect(url_for('dashboard'))
 
 # File size in MBs
 def fetch_sellers(file_size):
