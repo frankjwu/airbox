@@ -24,7 +24,7 @@ class User(db.Model):
         # TODO: define this
         return True
 
-    @static_method
+    @staticmethod
     def fetch(id):
         User.query(uid = id)
 
