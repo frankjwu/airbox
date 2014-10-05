@@ -163,6 +163,8 @@ def upload_processor(upload):
 
 	# 2. Fetch sellers and find best match/matches
 	sellers = fetch_sellers(file_size)
+	if not sellers:
+		return "Error"
 	blocks = len(sellers)
 
 	file_names = []
@@ -211,6 +213,8 @@ def fetch_sellers(file_size):
 		max_seller = User.get_max_seller(ignore)
 		if not max_seller:
 			return None # ERROR: not enough sellers for this storage to happen
+		elif max_seller.space_left < amount_needed:
+			return None # ERROR: not enough bytes to make this happen
 		sellers.append(max_seller)
 		ignore = max_seller
 
