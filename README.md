@@ -1,4 +1,5 @@
-# Airbox - Airbnb for Dropbox
+# Airbox
+### Airbnb for Dropbox
 
 Do you have too much Dropbox space? Or do you need more?
 
@@ -14,6 +15,8 @@ So why would you ever use this when you could just keep making new, free Dropbox
 
 ![Dashboard](http://i.imgur.com/3HqUrpW.png)
 
+*Note: this is a proof of concept created in a 24 hour hackathon. This is a demonstration of a secure, distributed, secondary marketplace for Dropbox space, but no space is actually being sold. You can only test Airbox locally.*
+
 ## Install
 
 In config.py, change `app.secret_key` - instructions on how to generate one are available [here](http://flask.pocoo.org/docs/0.10/quickstart/#sessions).
@@ -25,3 +28,19 @@ You also need to change `AIRBOX_DROPBOX_APP_KEY` and `AIRBOX_DROPBOX_APP_SECRET`
     source airbox/bin/activate
     python db.py
     python run.py
+
+## Usage
+
+First, on each account you want to test Airbox with, you'll need to go to the "Rent out your space" section and specify how much Dropbox space you want to make available for Airbox files.
+
+Then, you can upload files in the "Find space" section and watch as the file is split into encrypted, 1 MB pieces ('SPLIT_FILESIZE' in views.py) and uploaded to Dropbox.
+
+To retrieve your files, click the appropriate file name in the "Your Downloads" section. The pieces will be decrypted and pieced back together.
+
+## Improvements to be made
+
+- Add redundancy for files
+- Don't upload your own files to your own Dropbox if we can avoid it
+- Improve algorithm for finding space: currently it just finds the person with the most space available for rent (attempting to put consecutive blocks on different accounts if available)
+- Improve stability: sometimes, decryption fails
+- Add more documentation
