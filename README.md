@@ -37,10 +37,12 @@ Then, you can upload files in the "Find space" section and watch as the file is 
 
 To retrieve your files, click the appropriate file name in the "Your Downloads" section. The pieces will be decrypted and pieced back together.
 
+A sample 10MB file is included in [the demo directory](sample.txt). You can upload it, download it, and then `diff` it with the original file.
+
 ## Improvements to be made
 
+- Improve stability: sometimes, decryption fails
 - Add redundancy for files
 - Don't upload your own files to your own Dropbox if we can avoid it
 - Improve algorithm for finding space: currently it just finds the person with the most space available for rent (attempting to put consecutive blocks on different accounts if available)
-- Improve stability: sometimes, decryption fails
 - Add more documentation
