@@ -10,9 +10,9 @@ When it comes time for you to retrieve your files again, you can come back to us
 
 So why would you ever use this when you could just keep making new, free Dropbox accounts? Well, with Airbox, you only need one account and one interface -- no need to login and logout.
 
-[Airbox](http://i.imgur.com/vkGXblD.png)
+![Airbox](http://i.imgur.com/vkGXblD.png)
 
-[Dashboard](http://i.imgur.com/3HqUrpW.png)
+![Dashboard](http://i.imgur.com/3HqUrpW.png)
 
 ## Install
 
