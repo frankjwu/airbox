@@ -37,7 +37,7 @@ Then, you can upload files in the "Find space" section and watch as the file is 
 
 To retrieve your files, click the appropriate file name in the "Your Downloads" section. The pieces will be decrypted and pieced back together.
 
-A sample 10MB file is included in [the demo directory](sample.txt). You can upload it, download it, and then `diff` it with the original file.
+A sample 10MB file is included in [the demo directory](demo/sample.txt). You can upload it, download it, and then `diff` it with the original file.
 
 ## Improvements to be made
 
