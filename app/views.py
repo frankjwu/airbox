@@ -15,8 +15,8 @@ import random, string
 import simplecrypt
 
 
-AIRBOX_DROPBOX_APP_KEY = os.environ.get('AIRBOX_DROPBOX_APP_KEY')
-AIRBOX_DROPBOX_APP_SECRET = os.environ.get('AIRBOX_DROPBOX_APP_SECRET')
+AIRBOX_DROPBOX_APP_KEY = app.config['AIRBOX_DROPBOX_APP_KEY']
+AIRBOX_DROPBOX_APP_SECRET = app.config['AIRBOX_DROPBOX_APP_SECRET']
 SPLIT_FILESIZE = 10000000 # in bytes. this is 10MB
 
 @app.route('/')
