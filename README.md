@@ -22,6 +22,6 @@ You also need to change `AIRBOX_DROPBOX_APP_KEY` and `AIRBOX_DROPBOX_APP_SECRET`
 
 ## Run
 
-  source airbox/bin/activate
-  python db.py
-  python run.py
+    source airbox/bin/activate
+    python db.py
+    python run.py
