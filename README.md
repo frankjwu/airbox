@@ -31,13 +31,13 @@ You also need to change `AIRBOX_DROPBOX_APP_KEY` and `AIRBOX_DROPBOX_APP_SECRET`
 
 ## Usage
 
-First, on each account you want to test Airbox with, you'll need to go to the "Rent out your space" section and specify how much Dropbox space you want to make available for Airbox files.
+First, on each account you want to test Airbox with, you need to go to the "Rent out your space" section and specify how much Dropbox space you want to make available for Airbox files.
 
 Then, you can upload files in the "Find space" section and watch as the file is split into encrypted, 1 MB pieces ('SPLIT_FILESIZE' in views.py) and uploaded to Dropbox.
 
 To retrieve your files, click the appropriate file name in the "Your Downloads" section. The pieces will be decrypted and pieced back together.
 
-A sample 10MB file is included in [the demo directory](demo/sample.txt). You can upload it, download it, and then `diff` it with the original file.
+Sample files are included in [the demo directory](demo). You can upload the files to Airbox, download them, and then `diff` with the original ones.
 
 ## Improvements to be made
 
